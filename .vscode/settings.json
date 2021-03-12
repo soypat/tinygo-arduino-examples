@@ -1,0 +1,6 @@
+{
+    "go.toolsEnvVars": {
+        "GOROOT": "/home/pato/.cache/tinygo/goroot-go1.16-b3b7b83b9cd5e2c74aeaeca91cfb31dbe35d841a79329e38dfc23cea74e92c34-syscall",
+        "GOFLAGS": "-tags=arduino,atmega328p,atmega,avr5,avr,baremetal,linux,arm,tinygo,gc.conservative,scheduler.none"
+    }
+}
