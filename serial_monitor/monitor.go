@@ -18,11 +18,14 @@ var config = struct {
 }{
 	// the port will be COMx on windows (where x is a number).
 	// on linux the port will take the form /dev/ttyACM0 or /dev/ttyUSB0 (or similar)
-	Port:     "COM3",
+	Port:     "/dev/ttyACM0",
 	Filename: "outduino.txt",
 }
 
 func main() {
+	if len(os.Args) > 1 {
+		config.Port = os.Args[1]
+	}
 	c := &serial.Config{Name: config.Port, Baud: 9600}
 	s, err := serial.OpenPort(c)
 
@@ -45,7 +48,6 @@ func main() {
 		if _, err := fo.Write(buf[:n]); err != nil {
 			panic(err)
 		}
-		fmt.Printf("%q", buf[:n])
+		fmt.Printf("%s", buf[:n])
 	}
-
 }
