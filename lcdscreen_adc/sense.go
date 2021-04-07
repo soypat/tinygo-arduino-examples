@@ -1,5 +1,7 @@
 // Package lia_lcd shows simple use of tinygo
-// to read Arduino Uno A0 pin and print value to LCD screen (hd44780, 4 bit config).
+// to read Arduino Uno A0 pin and print value to LCD screen (hd44780, 4 bit config) and create
+// a PWM signal on pin D6.
+// We also read A1 and print value read to lcd.
 // The arduino LED will blink as well.
 //
 // LCD connection scheme is same as shown at https://www.arduino.cc/en/Tutorial/LibraryExamples/HelloWorld
@@ -9,7 +11,6 @@ package main
 
 import (
 	"machine"
-	"strconv"
 	"time"
 
 	// If tinygo errors when flashing due to package import error, install Go version 1.15.8, run go mod list (generate the go mod file) and reinstall Go 1.16 to be able to flash
@@ -29,12 +30,26 @@ var pote = machine.ADC{
 	Pin: machine.ADC0,
 }
 
+var sensor = machine.ADC{
+	Pin: machine.ADC1,
+}
+
+const (
+	pwmPin       = machine.D6
+	blinkyPeriod = time.Millisecond * 500
+)
+
 func main() {
+	// PWM Config
+	machine.InitPWM()
+	pwm := machine.PWM{Pin: pwmPin}
+	err := pwm.Configure()
+	checkError(err, "failed to configure pwmPin")
 	// ADC configuration
 	machine.InitADC()
 	adcCfg := machine.ADCConfig{}
 	pote.Configure(adcCfg)
-
+	sensor.Configure(adcCfg)
 	// LED will blink. Thus we configure it to be an output.
 	machine.LED.Configure(machine.PinConfig{Mode: machine.PinOutput})
 
@@ -52,22 +67,35 @@ func main() {
 
 	// Write tool versions at the time of writing this program
 	lcd.ClearDisplay()
-	lcd.Write([]byte("TinyGo0.17 Go16"))
+	// lcd.Write([]byte("    bar"))
+	lcd.SetCursor(0, 0)
+	lcd.Write([]byte("ADC"))
 	lcd.Display()
+	lcd.SetCursor(0, 1)
+	lcd.Write([]byte("PWM"))
 
+	lcd.Display()
+	// go blinky()
 	var val uint8
+	// ton, toff := millis(), millis()
+	var numbuff = [3]byte{'0', '0', '0'}
 	for {
+		// PWM control through potentiometer
 		// set line place to overwrite previous content
-		lcd.SetCursor(0, 1)
+		lcd.SetCursor(5, 1)
 		// read and print adc value
 		val = adcToPcnt(pote.Get())
-		lcd.Write([]byte(strconv.Itoa(int(val))))
+		formatUint8(val, numbuff[:])
+		lcd.Write(numbuff[:])
+		pwmval := (uint16(val) * 254) / 100
+		pwm.Set(pwmval << 8)
 		lcd.Display()
-		// Blinky. On Arduino uno machine.LED is pin 13. (machine package specifies microchip pins, these may or may not coincide with board pin names)
-		machine.LED.High()
-		time.Sleep(time.Millisecond * 200)
-		machine.LED.Low()
-		time.Sleep(time.Millisecond * 200)
+		// analogRead on pin A1
+		val = adcToPcnt(sensor.Get())
+		lcd.SetCursor(5, 0)
+		formatUint8(val, numbuff[:])
+		lcd.Write(numbuff[:])
+		lcd.Display()
 	}
 }
 
@@ -77,4 +105,25 @@ func main() {
 func adcToPcnt(v uint16) uint8 {
 	const div uint16 = maxUint16 / 100
 	return uint8(v / div)
+}
+
+func checkError(err error, msg string) {
+	if err != nil {
+		print(msg, ": ", err.Error())
+		println()
+	}
+}
+
+var tstart = time.Now()
+
+func millis() int {
+	return int(time.Since(tstart).Milliseconds())
+}
+
+var str string
+
+func formatUint8(val uint8, buff []byte) {
+	buff[2] = val%10 + '0'
+	buff[1] = (val/10)%10 + '0'
+	buff[0] = (val/100)%10 + '0'
 }
