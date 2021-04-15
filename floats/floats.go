@@ -8,7 +8,7 @@ package main
 // Type alias for working with floats. Nice shorthand to float32
 type float = float32
 
-// Note creating a user defined type will mean you will not be able to use
+// Note creating a user defined type will mean you will not be able to
 // pass `userfloat` types to functions that take a float32. Avoid this pattern if possible
 type userfloat float32
 

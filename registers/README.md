@@ -6,7 +6,7 @@ For example, to set the `SPCR` registry (arduino SPI clock) one in arduino can s
 ```cpp
 void setup() {
     // arduino setting of SPCR registry 0x4c (77)
-    SPCR = bit(SPE) | bit(MSTR)
+    SPCR = bit(SPE) | bit(MSTR);
     bitSet(SPSR, SPI2X);
 }
 ```
