@@ -9,10 +9,10 @@ The following two examples yield the same bit-code
 ```go
 func setBank(address uint8) {
     bank := address & BANK_MASK // we create a variable in function scope
-	if bank != d.Bank {
+	if bank != CBANK {
 		d.writeOp(BIT_FIELD_CLR, ECON1, bank)
 		d.writeOp(BIT_FIELD_SET, ECON1, bank>>5)
-		d.Bank = bank
+		CBANK = bank
 	}
 }
 ```
@@ -24,10 +24,10 @@ the same bitcode for both functions.
 
 ```go
 func setBank(address uint8) {
-	if address & BANK_MASK != d.Bank {
+	if address & BANK_MASK != CBANK{
 		d.writeOp(BIT_FIELD_CLR, ECON1, address & BANK_MASK)
 		d.writeOp(BIT_FIELD_SET, ECON1, (address & BANK_MASK)>>5)
-		d.Bank = address & BANK_MASK
+		CBANK = address & BANK_MASK
 	}
 }
 ```
