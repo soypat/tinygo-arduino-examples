@@ -35,3 +35,5 @@ func setBank(address uint8) {
 Hopefully this will clear up some misconceptions on optimizing for space: **it is preferrable
 to write readable code** from the start and let the compiler optimize as much as it can. Once
 you are done with your program and you find it runs too slow or could consume less space, then one begins optimizing where convenient.
+
+More on optimization options at [tinygo.org's Important Options page](https://tinygo.org/docs/reference/usage/important-options/)

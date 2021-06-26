@@ -30,14 +30,14 @@ This size is still too large for microcontrollers though, especially the Arduino
 tinygo build -target=arduino -o="tinyhello.bin" .
 ```
 
-The `.bin` extension [is important for the tinygo `build` command](https://tinygo.org/usage/subcommands/), it specifies the output file type. Running `ls -lah` again shows us the `hello.bin` file is **625 bytes**, about the size one would expect for such a simple program.
+The `.bin` extension [is important for the tinygo `build` command](https://tinygo.org/docs/reference/usage/subcommands/), it specifies the output file type. Running `ls -lah` again shows us the `hello.bin` file is **625 bytes**, about the size one would expect for such a simple program.
 
 To view more information on program size use the `-size=short` flag with `tinygo build`
 
 ## Optimization
 
 
-One can further reduce the size of the binary by discarding features one does not use. See important [build options on the tinygo.org site.](https://tinygo.org/usage/important-options/).
+One can further reduce the size of the binary by discarding features one does not use. See important [build options on the tinygo.org site.](https://tinygo.org/docs/reference/usage/important-options/).
 
 ### RAM vs. Flash
 By using the `-size=short` flag to view memory usage we find if we use a less aggressive optimization strategy (`-opt=s` instead of `-opt=z`) we reduce our ram usage by 81 bytes while increasing flash storage usage by 14 bytes. Usually flash memory is more critical, but it is nice to be able to manage both.
@@ -67,7 +67,7 @@ $ tinygo build -target=arduino -size=short -o="hello.bin" -gc=none -panic=trap  
    code    data     bss |   flash     ram
     456      11     642 |     467     653
 ```
-Enabling `opt=z`, panic and garbage collector optimizations a **467 kB** binary is reached, down from **625 kB**.
+Enabling `opt=z`, panic and garbage collector optimizations a **467 bytes** binary is reached, down from **625 bytes**.
 
 ## Conclusion
 Running `tinygo build` can show us the size the program will have on the microcontroller. We also saw that we can reach much smaller sizes if we use tinygo instead of the go compiler for regular computer programs!
