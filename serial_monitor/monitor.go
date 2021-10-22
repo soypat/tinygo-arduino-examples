@@ -5,9 +5,11 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"log"
 	"os"
 
+	"github.com/spf13/pflag"
 	"github.com/tarm/serial"
 )
 
@@ -15,27 +17,36 @@ import (
 var config = struct {
 	Port     string
 	Filename string
+	Baud     int
 }{
 	// the port will be COMx on windows (where x is a number).
 	// on linux the port will take the form /dev/ttyACM0 or /dev/ttyUSB0 (or similar)
 	Port:     "/dev/ttyACM0",
-	Filename: "outduino.txt",
+	Filename: "",
+	Baud:     9600,
 }
 
 func main() {
-	if len(os.Args) > 1 {
-		config.Port = os.Args[1]
+	pflag.IntVarP(&config.Baud, "baud", "b", config.Baud, "Baudrate for port. Common values: 9600, 115200")
+	pflag.StringVarP(&config.Filename, "output", "o", config.Filename, "File to pipe read data to. Data is still piped to stdout.")
+	pflag.Parse()
+
+	if len(pflag.Args()) >= 1 {
+		config.Port = pflag.Arg(0)
 	}
-	c := &serial.Config{Name: config.Port, Baud: 9600}
+	c := &serial.Config{Name: config.Port, Baud: config.Baud}
 	s, err := serial.OpenPort(c)
 
 	if err != nil {
 		log.Fatal(err)
 	}
-	fo, err := os.Create(config.Filename)
-	defer fo.Close()
-	if err != nil {
-		panic(err)
+	fo := io.Discard
+	if config.Filename != "" {
+		fo, err := os.Create(config.Filename)
+		defer fo.Close()
+		if err != nil {
+			panic(err)
+		}
 	}
 
 	var n int
