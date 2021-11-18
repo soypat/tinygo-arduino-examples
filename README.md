@@ -41,5 +41,7 @@ tinygo flash -target=arduino -port=/dev/ttyUSB0 .
 ## Install the serial monitor
 
 ```shell
-go get -u github.com/soypat/tinygo-arduino-examples/monitor
+go install github.com/soypat/tinygo-arduino-examples/monitor@latest
 ```
+
+The executable will be installed to your GOBIN directory. To call from shell make sure GOBIN is in your PATH.
