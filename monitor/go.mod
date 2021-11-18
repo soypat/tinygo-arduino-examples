@@ -1,4 +1,4 @@
-module monitor
+module github.com/soypat/tinygo-arduino-examples/monitor
 
 go 1.16
 

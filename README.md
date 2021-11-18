@@ -37,3 +37,9 @@ You now have tinygo running on your Arduino!
 ```console
 tinygo flash -target=arduino -port=/dev/ttyUSB0 .
 ```
+
+## Install the serial monitor
+
+```shell
+go get -u github.com/soypat/tinygo-arduino-examples/monitor
+```
